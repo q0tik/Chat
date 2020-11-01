@@ -1,45 +1,47 @@
 package pro.q0tik.server;
 
+import pro.q0tik.Connectable;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.sql.SQLOutput;
 
-public class Server {
-    private static Socket clientSocket;
-    private static ServerSocket server;
-    private static BufferedReader in;
-    private static BufferedWriter out;
+public abstract class Server implements Connectable { //TODO: q0tChatServer + databases
+    static Socket clientSocket;
+    static ServerSocket server;
+    static BufferedWriter out;
+    static BufferedReader in;
 
-    private String ip = InetAddress.getLocalHost().getHostAddress();
-    private int port;
+    String ip = InetAddress.getLocalHost().getHostAddress();
+    int port;
 
-    public Server(int port) throws IOException {
-        this.port = port;
-        SServer();
+    public Server(int port) throws UnknownHostException {this.port = port;}
+
+    @Override
+    public Socket connectTo() {
+        try {
+            System.out.println("Successful connection!");
+            return new Socket(ip, port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Something was wrong :(");
+        return null;
     }
 
-    private void SServer () throws IOException {
-        server = new ServerSocket(port);
-        System.out.println("Yr ip is " + ip);
-
-        clientSocket = server.accept();
-
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-
-        String word = in.readLine();
-        System.out.println(word);
-
-        out.write("lolkek)");
-        out.flush();
-
-        clientSocket.close();
-        in.close();
-        out.close();
-        System.out.println("Server closed!");
-        server.close();
+    @Override
+    public String[] data() {
+        return new String[] {ip, "" + port};
     }
+
+    abstract void startServer() throws IOException;
+
+    abstract void stopServer() throws IOException;
+
+    //TODO: logfile...
 }
