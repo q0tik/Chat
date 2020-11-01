@@ -1,6 +1,8 @@
 package pro.q0tik.server;
 
 import pro.q0tik.Connectable;
+import pro.q0tik.Listener;
+import pro.q0tik.Sender;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -11,8 +13,8 @@ import java.net.UnknownHostException;
 public abstract class Server implements Connectable { //TODO: q0tChatServer + databases
     static Socket clientSocket;
     static ServerSocket server;
-    static BufferedWriter out;
-    static BufferedReader in;
+    static Listener listener;
+    static Sender sender;
 
     String ip = InetAddress.getLocalHost().getHostAddress();
     int port;
@@ -24,8 +26,6 @@ public abstract class Server implements Connectable { //TODO: q0tChatServer + da
         try {
             System.out.println("Successful connection!");
             return new Socket(ip, port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

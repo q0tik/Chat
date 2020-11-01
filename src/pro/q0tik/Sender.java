@@ -9,9 +9,11 @@ public class Sender extends Thread {
     public BufferedWriter out;
     public BufferedReader reader;
     public boolean isWorking = true;
+    public String username;
 
-    public Sender(BufferedWriter bw) {
+    public Sender(String username, BufferedWriter bw) {
         out = bw;
+        this.username = username;
         reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
@@ -20,7 +22,8 @@ public class Sender extends Thread {
         while (!word.equals("/exit")) {
             try {
                 word = reader.readLine();
-                out.write(word + '\n');
+                //System.out.println("\u001B[33m" + username + ": " + "\u001B[0m");
+                out.write(username + ": " + word + '\n');
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();

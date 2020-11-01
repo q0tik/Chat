@@ -22,16 +22,22 @@ public class Start { //TODO: to opti&to clean
         }
 
         if (args[0].equals("-s")) {
-            System.out.println("Chose a port, which your server will work on");
+            System.out.print("Chose the port: ");
             int port = scanner.nextInt();
-            System.out.print("Chose a password: ");
+            System.out.print("Chose the password: ");
             String password = scanner.nextLine();
             new OwnServer(port, password); //TODO: OwnServer class... :3
         }
 
         { //TODO: create a normal client class (or interface)
             if (args[0].equals("-c")) {
-                new ClientCon("q0tik.pro", 6565);
+                System.out.print("Enter a username: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter the ip(dns): ");
+                String ip = scanner.nextLine();
+                System.out.print("Enter the port: ");
+                int port = scanner.nextInt();
+                new ClientCon(ip, port, name);
             }
 
             /*if (args[0].equals("-q")) {

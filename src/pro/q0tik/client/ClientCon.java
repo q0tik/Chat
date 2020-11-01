@@ -8,14 +8,15 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientCon implements Connectable {
-    public ClientCon(String ip, int port) throws IOException {
+    public ClientCon(String ip, int port, String name) throws IOException {
         this.ip = ip;
         this.port = port;
+        this.username = name;
         SChat();
     }
 
-    private int port;
-    private String ip;
+    private final int port;
+    private final String ip;
 
     public String username;
 
@@ -27,21 +28,25 @@ public class ClientCon implements Connectable {
 
     private void SChat() throws IOException {
         if (init()) {
-            listener.start();
             sender.start();
+            listener.start();
 
-            if (!sender.isWorking) {
-                closeConnection();
+            try {
+                sender.join();
+                listener.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            closeConnection();
+
         }
     }
 
     private boolean init() {
         try {
             clientSocket = connectTo();
-
-            listener = new Listener(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
-            sender = new Sender(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())));
+            sender = new Sender(username, new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())));
+            listener = new Listener(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())), sender);
 
             return true;
         } catch (IOException e) {

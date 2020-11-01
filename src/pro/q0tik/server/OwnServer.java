@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.Arrays;
 
 public class OwnServer extends Server {
-    private String password;
+    private final String password;
     Listener listener;
     Sender sender;
 
@@ -37,11 +37,17 @@ public class OwnServer extends Server {
     void startServer() throws IOException {
         if (init()) {
             System.out.println(Arrays.toString(data()));
-            listener.start();
+
             sender.start();
-            if (!sender.isWorking) {
-                stopServer();
+            listener.start();
+
+            try {
+                sender.join();
+                listener.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            stopServer();
         }
     }
 
@@ -49,9 +55,9 @@ public class OwnServer extends Server {
         try {
             server = new ServerSocket(port);
             clientSocket = server.accept();
-            listener = new Listener(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
             //out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            sender = new Sender(new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())));
+            sender = new Sender("Server", new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())));
+            listener = new Listener(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())), sender);
 
             return true;
         } catch (IOException e) {
@@ -63,8 +69,6 @@ public class OwnServer extends Server {
     @Override
     void stopServer() throws IOException {
         clientSocket.close();
-        in.close();
-        out.close();
         System.out.println("Server closed!");
         server.close();
     }
